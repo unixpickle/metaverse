@@ -45,6 +45,24 @@ func FlashEvents() *ActionSpace {
 	return ActionSpaceUnion(list...)
 }
 
+// VecToObj creates a Universe-compatible action object
+// from a sampled action vector.
+func (a *ActionSpace) VecToObj(vec anyvec.Vector) interface{} {
+	c := vec.Creator()
+	ops := c.NumOps()
+
+	var res []interface{}
+
+	keyNames := a.Keys.Slice()
+	for i, keyName := range keyNames {
+		num := anyvec.Sum(vec.Slice(i, i+1))
+		pressed := !ops.Equal(num, c.MakeNumeric(0))
+		res = append(res, []interface{}{"KeyEvent", keyName, pressed})
+	}
+
+	return res
+}
+
 // ParamSize returns the size of parameter vectors for the
 // action space.
 func (a *ActionSpace) ParamSize() int {
