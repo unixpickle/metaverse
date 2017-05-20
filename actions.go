@@ -63,6 +63,20 @@ func (a *ActionSpace) VecToObj(vec anyvec.Vector) interface{} {
 	return res
 }
 
+// Mask removes any actions from a Universe action object
+// that are not in the action space.
+func (a *ActionSpace) Mask(actions interface{}) interface{} {
+	events := actions.([]interface{})
+	var newEvents []interface{}
+	for _, e := range events {
+		tuple := e.([]interface{})
+		if tuple[0] == "KeyEvent" && a.Keys.Contains(tuple[1].(string)) {
+			newEvents = append(newEvents, e)
+		}
+	}
+	return newEvents
+}
+
 // ParamSize returns the size of parameter vectors for the
 // action space.
 func (a *ActionSpace) ParamSize() int {
@@ -108,6 +122,12 @@ func NewStringSet(s ...string) StringSet {
 		res[str] = struct{}{}
 	}
 	return res
+}
+
+// Contains checks if a string is in the set.
+func (s StringSet) Contains(elem string) bool {
+	_, ok := s[elem]
+	return ok
 }
 
 // Slice turns the set into a sorted list.
