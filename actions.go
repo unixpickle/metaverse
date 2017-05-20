@@ -37,7 +37,7 @@ func ActionSpaceUnion(spaces ...*ActionSpace) *ActionSpace {
 
 // FlashActionSpace returns the union of the ActionSpaces
 // for all supported Flash games.
-func FlashEvents() *ActionSpace {
+func FlashActionSpace() *ActionSpace {
 	var list []*ActionSpace
 	for _, s := range FlashActionSpaces {
 		list = append(list, s)
