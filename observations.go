@@ -97,7 +97,7 @@ func (i *Imager) Image(obs gym.Obs) anyvec.Vector {
 		vectorData = append(vectorData, sum/float64(stride))
 	}
 
-	vector := i.creator.MakeVectorData(i.creator.MakeVectorData(vectorData))
+	vector := i.creator.MakeVectorData(i.creator.MakeNumericList(vectorData))
 	vector = i.padding.Apply(i.resize.Apply(anydiff.NewConst(vector), 1), 1).Output()
 	anyvec.Round(vector)
 	return vector
