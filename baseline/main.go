@@ -99,6 +99,9 @@ func main() {
 			ActionJudger: &anypg.QJudger{Discount: f.Discount},
 		},
 		TargetKL: f.StepSize,
+		LogLineSearch: func(kl, improvement anyvec.Numeric) {
+			log.Printf("line search: kl=%f improvement=%f", kl, improvement)
+		},
 	}
 
 	var saveLock sync.Mutex
