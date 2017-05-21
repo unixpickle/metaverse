@@ -102,3 +102,14 @@ func (i *Imager) Image(obs gym.Obs) anyvec.Vector {
 	anyvec.Round(vector)
 	return vector
 }
+
+// OutSize returns the dimensions of the output tensor.
+func (i *Imager) OutSize() (width, height, depth int) {
+	depth = 3
+	if i.grayify {
+		depth = 1
+	}
+	width = i.padding.PaddingLeft + i.padding.PaddingRight + i.resize.OutputWidth
+	height = i.padding.PaddingTop + i.padding.PaddingBottom + i.resize.OutputHeight
+	return
+}

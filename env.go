@@ -9,7 +9,7 @@ import (
 // Env is a Universe environment implementing anyrl.Env.
 type Env struct {
 	GymEnv      gym.Env
-	Imager      Imager
+	Imager      *Imager
 	ActionSpace *ActionSpace
 
 	// Mask is used to prevent the agent from making some
