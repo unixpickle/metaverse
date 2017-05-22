@@ -36,6 +36,7 @@ type Flags struct {
 	FPS        int
 	ScreenSize int
 	Color      bool
+	PastFrames int
 
 	NumParallel int
 	BatchSize   int
@@ -54,6 +55,7 @@ func main() {
 	flag.IntVar(&f.FPS, "fps", 5, "time-steps per second")
 	flag.IntVar(&f.ScreenSize, "size", 200, "longest side-length of screen")
 	flag.BoolVar(&f.Color, "color", false, "use color screen images")
+	flag.IntVar(&f.PastFrames, "pastframes", 1, "number of state history frames")
 	flag.IntVar(&f.NumParallel, "parallel", 4, "parallel environments")
 	flag.IntVar(&f.BatchSize, "batch", 12, "rollouts per batch")
 	flag.Float64Var(&f.Discount, "discount", 0.95, "discount factor")
@@ -167,13 +169,13 @@ func MakeNetwork(creator anyvec.Creator, imager *metaverse.Imager,
 			Tanh
 			FC(out=256)
 			Tanh
-		`, width, height, depth*2)
+		`, width, height, depth*(f.PastFrames+1))
 		convNet, err := anyconv.FromMarkup(creator, markup)
 		must(err)
 		setupVisionLayers(convNet.(anynet.Net))
 		actionSpace := metaverse.FlashActionSpaces[f.EnvName]
 		res := anyrnn.Stack{
-			anyrnn.NewMarkov(creator, 1, width*height*depth, true),
+			anyrnn.NewMarkov(creator, f.PastFrames, width*height*depth, true),
 			&anyrnn.LayerBlock{Layer: convNet},
 			&anyrnn.LayerBlock{
 				Layer: anynet.NewFCZero(creator, 256, actionSpace.ParamSize()),
