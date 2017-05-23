@@ -40,6 +40,7 @@ type Flags struct {
 
 	NumParallel int
 	BatchSize   int
+	Force       bool
 
 	Discount float64
 	StepSize float64
@@ -58,6 +59,7 @@ func main() {
 	flag.IntVar(&f.PastFrames, "pastframes", 1, "number of state history frames")
 	flag.IntVar(&f.NumParallel, "parallel", 4, "parallel environments")
 	flag.IntVar(&f.BatchSize, "batch", 12, "rollouts per batch")
+	flag.BoolVar(&f.Force, "force", false, "ignore environment errors")
 	flag.Float64Var(&f.Discount, "discount", 0.95, "discount factor")
 	flag.Float64Var(&f.StepSize, "step", 0.01, "KL step size")
 	flag.Float64Var(&f.CGFrac, "cgfrac", 0.1, "fraction of samples for CG")
@@ -201,26 +203,41 @@ func GatherRollouts(roller *anyrl.RNNRoller, imager *metaverse.Imager,
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			env, err := gym.Make(f.GymHost, f.EnvName)
-			must(err)
-			defer env.Close()
 
-			// Universe-specific configuration.
-			must(env.UniverseWrap("CropObservations", nil))
-			must(env.UniverseWrap("Vision", nil))
-			must(env.UniverseConfigure(map[string]interface{}{
-				"remotes": 1,
-				"fps":     f.FPS,
-			}))
+			var env gym.Env
+			var preproc *metaverse.Env
+			var err error
 
-			preproc := &metaverse.Env{
-				GymEnv:      env,
-				Imager:      imager,
-				ActionSpace: roller.ActionSpace.(*metaverse.ActionSpace),
-			}
 			for _ = range requests {
+				if env == nil {
+					env, err = gym.Make(f.GymHost, f.EnvName)
+					must(err)
+					defer env.Close()
+
+					// Universe-specific configuration.
+					must(env.UniverseWrap("CropObservations", nil))
+					must(env.UniverseWrap("Vision", nil))
+					must(env.UniverseConfigure(map[string]interface{}{
+						"remotes": 1,
+						"fps":     f.FPS,
+					}))
+
+					preproc = &metaverse.Env{
+						GymEnv:      env,
+						Imager:      imager,
+						ActionSpace: roller.ActionSpace.(*metaverse.ActionSpace),
+					}
+				}
+
 				rollout, err := roller.Rollout(preproc)
-				must(err)
+				if !f.Force {
+					must(err)
+				} else if err != nil {
+					log.Println("environment error:", err)
+					env = nil
+					continue
+				}
+
 				log.Printf("rollout: sub_reward=%f",
 					rollout.Rewards.Mean())
 				resChan <- rollout
