@@ -17,6 +17,10 @@ var FlashObservationSpaces = map[string]*ObservationSpace{
 		Width:  800,
 		Height: 512,
 	},
+	"flashgames.EasterEggsChallenge-v0": &ObservationSpace{
+		Width:  570,
+		Height: 760,
+	},
 }
 
 // ObservationSpace defines information about a Flash
