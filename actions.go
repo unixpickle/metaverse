@@ -148,10 +148,11 @@ func (a *ActionSpace) Entropy(params anydiff.Res, batchSize int) anydiff.Res {
 }
 
 func (a *ActionSpace) actionSpace() *anyrl.Tuple {
-	res := &anyrl.Tuple{
-		Spaces:      []interface{}{&anyrl.Bernoulli{}},
-		ParamSizes:  []int{len(a.Keys)},
-		SampleSizes: []int{len(a.Keys)},
+	res := &anyrl.Tuple{}
+	if len(a.Keys) > 0 {
+		res.Spaces = append(res.Spaces, &anyrl.Bernoulli{})
+		res.ParamSizes = append(res.ParamSizes, len(a.Keys))
+		res.SampleSizes = append(res.SampleSizes, len(a.Keys))
 	}
 	if a.Pointer {
 		// X, Y, and clicked.
