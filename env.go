@@ -11,12 +11,6 @@ type Env struct {
 	GymEnv      gym.Env
 	Imager      *Imager
 	ActionSpace *ActionSpace
-
-	// Mask is used to prevent the agent from making some
-	// of the technically allowed actions.
-	//
-	// If nil, no mask is used.
-	Mask *ActionSpace
 }
 
 // Reset resets the environment.
@@ -34,9 +28,6 @@ func (e *Env) Reset() (obs anyvec.Vector, err error) {
 func (e *Env) Step(actionVec anyvec.Vector) (obs anyvec.Vector, reward float64,
 	done bool, err error) {
 	actionObj := e.ActionSpace.VecToObj(actionVec)
-	if e.Mask != nil {
-		actionObj = e.Mask.Mask(actionObj)
-	}
 	rawObs, reward, done, _, err := e.GymEnv.Step(actionObj)
 	if err != nil {
 		return

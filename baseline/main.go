@@ -70,7 +70,7 @@ func main() {
 	// Setup an RNNRoller for producing rollouts.
 	roller := &anyrl.RNNRoller{
 		Block:       MakeNetwork(creator, imager, f),
-		ActionSpace: metaverse.FlashActionSpaces[f.EnvName],
+		ActionSpace: ActionSpace(f.EnvName),
 
 		// Compress the input frames as we store them.
 		// If we used a ReferenceTape for the input, the
@@ -173,7 +173,7 @@ func MakeNetwork(creator anyvec.Creator, imager *metaverse.Imager,
 		convNet, err := anyconv.FromMarkup(creator, markup)
 		must(err)
 		setupVisionLayers(convNet.(anynet.Net))
-		actionSpace := metaverse.FlashActionSpaces[f.EnvName]
+		actionSpace := ActionSpace(f.EnvName)
 		res := anyrnn.Stack{
 			anyrnn.NewMarkov(creator, f.PastFrames, width*height*depth, true),
 			&anyrnn.LayerBlock{Layer: convNet},
@@ -238,6 +238,19 @@ func GatherRollouts(roller *anyrl.RNNRoller, imager *metaverse.Imager,
 		res = append(res, item)
 	}
 	return res
+}
+
+func ActionSpace(envName string) *metaverse.ActionSpace {
+	keyMask, ok := metaverse.FlashKeyMasks[envName]
+	if !ok {
+		essentials.Die("unknown environment:", envName)
+	}
+	pointerInfo := metaverse.FlashPointerInfo[envName]
+	return &metaverse.ActionSpace{
+		Keys:        keyMask,
+		Pointer:     pointerInfo != nil,
+		PointerInfo: pointerInfo,
+	}
 }
 
 func setupVisionLayers(net anynet.Net) {
