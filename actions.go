@@ -15,6 +15,7 @@ var FlashKeyMasks = map[string]StringSet{
 	"flashgames.DuskDrive-v0": NewStringSet("ArrowUp", "ArrowLeft",
 		"ArrowRight", "space"),
 	"flashgames.EasterEggsChallenge-v0": NewStringSet(),
+	"flashgames.BubbleHitPonyParade-v0": NewStringSet(),
 }
 
 // FlashPointerInfo stores, for each Flash environment,
@@ -27,6 +28,12 @@ var FlashPointerInfo = map[string]*PointerInfo{
 		NoClick: []*Rect{
 			{X: 17, Y: 128, Width: 48, Height: 47},
 			{X: 212, Y: 128, Width: 59, Height: 106},
+		},
+	},
+	"flashgames.BubbleHitPonyParade-v0": &PointerInfo{
+		PointerRect: &Rect{X: 18, Y: 84, Width: 640, Height: 480},
+		NoClick: []*Rect{
+			{X: 493, Y: 220, Width: 165, Height: 342},
 		},
 	},
 }

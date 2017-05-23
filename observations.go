@@ -21,6 +21,10 @@ var FlashObservationSpaces = map[string]*ObservationSpace{
 		Width:  570,
 		Height: 760,
 	},
+	"flashgames.BubbleHitPonyParade-v0": &ObservationSpace{
+		Width:  640,
+		Height: 480,
+	},
 }
 
 // ObservationSpace defines information about a Flash
