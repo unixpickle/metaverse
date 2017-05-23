@@ -14,6 +14,7 @@ import (
 var FlashKeyMasks = map[string]StringSet{
 	"flashgames.DuskDrive-v0": NewStringSet("ArrowUp", "ArrowLeft",
 		"ArrowRight", "space"),
+	"flashgames.EasterEggsChallenge-v0": NewStringSet(),
 }
 
 // FlashPointerInfo stores, for each Flash environment,
@@ -21,6 +22,13 @@ var FlashKeyMasks = map[string]StringSet{
 // For games with no pointer events, the entry is nil.
 var FlashPointerInfo = map[string]*PointerInfo{
 	"flashgames.DuskDrive-v0": nil,
+	"flashgames.EasterEggsChallenge-v0": &PointerInfo{
+		PointerRect: &Rect{X: 18, Y: 84, Width: 760, Height: 570},
+		NoClick: []*Rect{
+			{X: 17, Y: 128, Width: 48, Height: 47},
+			{X: 212, Y: 128, Width: 59, Height: 106},
+		},
+	},
 }
 
 // AllFlashKeys returns all the keys that are useful in at
